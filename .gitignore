@@ -1,0 +1,33 @@
+# Reference material (kept on disk, never committed)
+reference/screenshots/
+reference/dom/
+
+# Node
+node_modules/
+dist/
+.vite/
+*.local
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Playwright
+playwright-report/
+test-results/
