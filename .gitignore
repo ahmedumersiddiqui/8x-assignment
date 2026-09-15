@@ -31,3 +31,8 @@ Thumbs.db
 # Playwright
 playwright-report/
 test-results/
+
+# Local database
+*.db
+*.db-wal
+*.db-shm

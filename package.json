@@ -1,0 +1,20 @@
+{
+  "name": "amazon-clone",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup": "npm install && npm --prefix frontend install && npm run setup:api && npm run seed",
+    "setup:api": "cd backend && uv sync && uv run alembic upgrade head",
+    "seed": "cd backend && uv run python -m app.seed.run",
+    "seed:reset": "cd backend && uv run python -m app.seed.run --reset",
+    "dev": "concurrently -n api,web -c blue,green \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "cd backend && uv run uvicorn app.main:app --reload --port 8000",
+    "dev:web": "npm --prefix frontend run dev",
+    "test": "cd backend && uv run pytest -q",
+    "capture": "node scripts/capture-amazon.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "playwright": "^1.49.0"
+  }
+}

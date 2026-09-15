@@ -1,0 +1,79 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", Arial, Helvetica, sans-serif;
+
+  --color-nav-belt: #131921;
+  --color-nav-sub: #232f3e;
+  --color-ink: #0f1111;
+  --color-link: #2162a1;
+  --color-teal: #007185;
+  --color-cta: #ffd814;
+  --color-cta-hover: #f7ca00;
+  --color-buy: #ffa41c;
+  --color-deal: #cc0c39;
+  --color-badge: #f08804;
+  --color-page: #eaeded;
+  --color-line: #d5d9d9;
+  --color-muted: #565959;
+  --color-field: #f0f2f2;
+  --color-field-line: #888c8c;
+  --color-success: #007600;
+  --color-star: #de7921;
+
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-lg: 18px;
+  --text-xl: 21px;
+  --text-2xl: 24px;
+  --text-3xl: 28px;
+
+  --radius-*: initial;
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+  --font-weight-bold: 700;
+}
+
+@layer base {
+  html {
+    font-size: 16px;
+  }
+
+  body {
+    margin: 0;
+    background: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: 20px;
+    letter-spacing: -0.005em;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  legend {
+    font-weight: 700;
+  }
+
+  a {
+    color: var(--color-link);
+    text-decoration: none;
+  }
+
+  a:hover {
+    color: var(--color-deal);
+    text-decoration: underline;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+  }
+}

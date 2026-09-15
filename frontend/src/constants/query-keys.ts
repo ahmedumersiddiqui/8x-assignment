@@ -1,0 +1,15 @@
+export const QueryKeys = {
+  AccountDetails: 'accountDetails',
+  Cart: 'cart',
+  CheckoutPreview: 'checkoutPreview',
+  Categories: 'categories',
+  Order: 'order',
+  Orders: 'orders',
+  Product: 'product',
+  Products: 'products',
+  Reviews: 'reviews',
+  StoreListings: 'storeListings',
+  Storefront: 'storefront',
+  Stores: 'stores',
+  UploadPolicy: 'uploadPolicy',
+} as const

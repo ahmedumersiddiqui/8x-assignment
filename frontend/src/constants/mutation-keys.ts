@@ -1,0 +1,15 @@
+export const MutationKeys = {
+  AddToCart: 'addToCart',
+  Checkout: 'checkout',
+  Login: 'login',
+  Logout: 'logout',
+  Register: 'register',
+  MoveToCart: 'moveToCart',
+  RemoveCartItem: 'removeCartItem',
+  SaveForLater: 'saveForLater',
+  WriteReview: 'writeReview',
+  UpdateCartItem: 'updateCartItem',
+  CreateListing: 'createListing',
+  CreateStore: 'createStore',
+  DeleteListing: 'deleteListing',
+} as const

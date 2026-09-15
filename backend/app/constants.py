@@ -1,0 +1,10 @@
+API_PREFIX = "/api/v1"
+
+JWT_ALGORITHM = "HS256"
+AUTH_COOKIE = "access_token"
+CART_COOKIE = "cart_token"
+DELIVERY_COOKIE = "delivery_postal_code"
+CART_COOKIE_MAX_AGE_SECONDS = 60 * 60 * 24 * 30
+
+CACHE_VERSION_KEY = "catalog:v"
+CACHE_SOCKET_TIMEOUT_SECONDS = 1

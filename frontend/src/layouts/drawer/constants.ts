@@ -1,0 +1,1 @@
+export const DRAWER_CATEGORY_COUNT = 8
