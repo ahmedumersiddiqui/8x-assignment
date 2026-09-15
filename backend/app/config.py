@@ -30,13 +30,18 @@ class Settings(BaseSettings):
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_origins(cls, value: object) -> object:
-        """Accept a JSON array or a plain comma-separated list of origins."""
-        if not isinstance(value, str):
+        """Accept a JSON array or a plain comma-separated list of origins.
+
+        Trailing slashes are stripped: a browser's Origin header is scheme + host + port
+        and never carries one, so "https://app.vercel.app/" in the allowlist matches
+        nothing and every request fails preflight.
+        """
+        if isinstance(value, str):
+            text = value.strip()
+            value = json.loads(text) if text.startswith("[") else text.split(",")
+        if not isinstance(value, list):
             return value
-        text = value.strip()
-        if text.startswith("["):
-            return json.loads(text)
-        return [origin.strip() for origin in text.split(",") if origin.strip()]
+        return [origin.strip().rstrip("/") for origin in value if origin.strip()]
 
     @property
     def r2_configured(self) -> bool:
