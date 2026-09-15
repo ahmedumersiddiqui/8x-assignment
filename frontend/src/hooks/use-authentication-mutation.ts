@@ -41,7 +41,7 @@ export const useLogoutMutation = () => {
     mutationFn: () => API.send(APIEndpoints.Logout, 'POST'),
     onSettled: async () => {
       useAccountStore.getState().reset()
-      queryClient.clear()
+      await queryClient.resetQueries()
       await navigate({ to: LOGIN_PATH })
     },
   })
