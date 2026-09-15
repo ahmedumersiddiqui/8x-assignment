@@ -1,6 +1,7 @@
 const ENV = import.meta.env
 
-export const API_ORIGIN = ENV.VITE_API_ORIGIN ?? 'http://localhost:8000'
+// Trailing slash stripped: it would build `origin//api/v1`, which the API 404s.
+export const API_ORIGIN = (ENV.VITE_API_ORIGIN ?? 'http://localhost:8000').replace(/\/+$/, '')
 export const API_PREFIX = ENV.VITE_API_PREFIX ?? '/api/v1'
 export const IS_DEV_ENVIRONMENT = ENV.DEV
 
