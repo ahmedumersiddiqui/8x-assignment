@@ -1,6 +1,8 @@
-from typing import Literal
+import json
+from typing import Annotated, Literal
 
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -10,8 +12,11 @@ class Settings(BaseSettings):
     redis_url: str = "redis://localhost:6379/0"
     jwt_secret: str = "dev-only-insecure-secret-do-not-ship-me"
     jwt_ttl_hours: int = 24 * 7
-    cors_origins: list[str] = ["http://localhost:3000"]
+    # NoDecode: without it pydantic-settings insists the env var is JSON and dies on a
+    # bare "https://app.vercel.app" before any validator runs. Both forms are accepted.
+    cors_origins: Annotated[list[str], NoDecode] = ["http://localhost:3000"]
     cookie_secure: bool = False
+    # A split deploy is cross-site, and a Lax cookie is dropped on every XHR there.
     cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     cache_ttl: int = 60
     max_page_size: int = 48
@@ -21,6 +26,17 @@ class Settings(BaseSettings):
     r2_secret_access_key: str = ""
     r2_bucket: str = ""
     r2_public_base_url: str = ""
+
+    @field_validator("cors_origins", mode="before")
+    @classmethod
+    def _split_origins(cls, value: object) -> object:
+        """Accept a JSON array or a plain comma-separated list of origins."""
+        if not isinstance(value, str):
+            return value
+        text = value.strip()
+        if text.startswith("["):
+            return json.loads(text)
+        return [origin.strip() for origin in text.split(",") if origin.strip()]
 
     @property
     def r2_configured(self) -> bool:

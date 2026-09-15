@@ -52,6 +52,55 @@ fails in the console with no server-side trace, which is the single most confusi
 break. `R2_PUBLIC_BASE_URL` must be a public custom domain or the bucket's `r2.dev` address, since
 that is what gets stored as each image URL.
 
+## Deploy it
+
+API on Railway, web on Vercel. Deploy the API first — the web build needs its URL.
+
+### 1. Railway (API)
+
+New Project → Deploy from GitHub repo → **Settings → Root Directory: `backend`**. It picks up
+`backend/Dockerfile`, which migrates, seeds, then serves.
+
+Add a **Redis** service to the project (optional — the cache fails open), and add a **Volume**
+mounted at `/data`. SQLite on a container filesystem is wiped on every deploy; the volume is what
+makes orders survive a redeploy.
+
+Variables:
+
+```
+DATABASE_URL=sqlite:////data/amazon.db     # four slashes: sqlite: + //// = absolute path
+REDIS_URL=${{Redis.REDIS_URL}}             # Railway reference variable
+JWT_SECRET=<openssl rand -hex 32>
+CORS_ORIGINS=https://<your-app>.vercel.app    # comma-separated for more than one
+COOKIE_SECURE=true
+COOKIE_SAMESITE=none
+```
+
+Then **Networking → Generate Domain** and check `https://<api>.up.railway.app/health` returns `database: ok`.
+
+### 2. Vercel (web)
+
+Import the same repo → **Root Directory: `frontend`**. Nitro detects Vercel from its own build
+environment and writes `.vercel/output`, so leave the framework preset alone. One variable:
+
+```
+VITE_API_ORIGIN=https://<api>.up.railway.app
+```
+
+### 3. Close the loop
+
+Go back to Railway and set `CORS_ORIGINS` to the real Vercel URL if you guessed it. Each Vercel
+preview deploy gets its own origin, so either add them to the allowlist or test on production.
+
+If you use the seller screens, add the Vercel origin to the R2 bucket's CORS `AllowedOrigins`
+alongside `http://localhost:3000`.
+
+**The cookie is the thing that breaks.** Locally the web app and API are the same site on different
+ports, so `SameSite=Lax` works. On two different domains they are cross-site, and a Lax cookie is
+silently dropped on every XHR — you log in, get a 200, and stay logged out. `COOKIE_SAMESITE=none`
+plus `COOKIE_SECURE=true` is the fix, and both are required together: browsers reject
+`SameSite=None` without `Secure`.
+
 ## Layout
 
 ```
