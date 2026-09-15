@@ -1,3 +1,5 @@
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -10,6 +12,7 @@ class Settings(BaseSettings):
     jwt_ttl_hours: int = 24 * 7
     cors_origins: list[str] = ["http://localhost:3000"]
     cookie_secure: bool = False
+    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
     cache_ttl: int = 60
     max_page_size: int = 48
 

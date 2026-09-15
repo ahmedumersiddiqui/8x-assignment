@@ -13,7 +13,9 @@ npm run dev               # API on :8000, web on :3000
 ```
 
 Requires [uv](https://docs.astral.sh/uv/), Node 20+, and Docker (for Redis only).
-Open http://localhost:3000. Sign in with `demo@example.com` / `demo12345`, or register.
+Open http://localhost:3000. Sign in with `demo@example.com` / `demo12345`, or register. The demo
+account runs two of the eight seeded stores, so **Sell on emporia** in the nav opens onto a real
+store picker rather than an empty state.
 
 The browser talks to FastAPI on :8000 directly (`VITE_API_ORIGIN` to change it). Same site,
 different port, so the `SameSite=Lax` auth cookie still rides along and the CORS allowlist covers
@@ -125,14 +127,23 @@ flag across sign-in.
 model is the production answer; nobody grading a catalogue this size is measuring recall@k. The rail
 reuses the products cache, so it usually costs nothing.
 
-**A seller listing is an ordinary catalogue product.** `Product.store_id` is null for everything
-the seed writes and set for everything a seller lists; there is no second table and no parallel
-read path, so a new listing lands in the same FTS index, the same faceted grid and the same buy box
-as the house catalogue, and the PDP's "Sold by" row names the store. One account can run several
-stores (`UNIQUE(user_id, display_name)`, capped at ten) because keeping unrelated lines of business
-apart is the whole reason a storefront is a thing separate from a user. Deleting a listing that has
-already sold is refused with `409`: order items point at the variant row, and an order must never
-change because a product did.
+**Every product is listed by a real store.** There is no anonymous house inventory: the seed
+creates eight storefronts across six seller accounts and lists all ~300 products through them, so
+"Sold by" on a PDP always names a store with a page of its own. A listing is an ordinary `Product`
+with `store_id` set — no second table, no parallel read path — so anything created through the sell
+form lands in the same FTS index, the same faceted grid and the same buy box as the seeded
+catalogue. One account can run several stores (`UNIQUE(user_id, display_name)`, capped at ten)
+because keeping unrelated lines of business apart is the whole reason a storefront is separate from
+a user. `store_id` stays nullable anyway: a product can outlive the store that listed it, and an
+order outlives both. Deleting a listing that has already sold is refused with `409` — order items
+point at the variant row, and an order must never change because a product did.
+
+**A storefront page is the catalogue query with one filter pinned.** `/store/$slug` reuses
+`/products?store=<slug>`, so it inherits sorting, paging, facet counts and the delivery promise
+instead of getting a parallel listing endpoint. `GET /stores/{slug}` supplies just the name, the
+listing count and the joined date, and returns nothing about who owns the shop. Everything else
+under `/stores` is the seller's own view and needs a session — the public one takes a slug where
+the private ones take an id.
 
 **The upload cap is enforced by the signature, not by the form.** The browser asks for a ticket,
 the API refuses to sign anything over 5 MB or outside the image allowlist, and boto3 puts

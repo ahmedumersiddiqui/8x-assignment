@@ -35,7 +35,7 @@ def set_cookie(response: Response, name: str, value: str, max_age: int) -> None:
         value,
         max_age=max_age,
         httponly=True,
-        samesite="lax",
+        samesite=settings.cookie_samesite,
         secure=settings.cookie_secure,
         path="/",
     )
